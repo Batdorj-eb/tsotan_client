@@ -19,6 +19,10 @@ function storedPath(value: string) {
   return value;
 }
 
+function uid() {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
 export default function ProductFormPage() {
   const params = useParams<{ id?: string }>();
   const router = useRouter();
@@ -85,7 +89,7 @@ export default function ProductFormPage() {
     if (!files.length) return;
 
     const pending = files.map((file) => ({
-      id: `${file.name}-${file.size}-${crypto.randomUUID()}`,
+      id: `${file.name}-${file.size}-${uid()}`,
       preview: URL.createObjectURL(file),
       path: null as string | null,
       uploading: true,
