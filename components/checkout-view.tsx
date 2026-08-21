@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { useCart } from "@/components/cart-provider";
-import { checkOrderPayment, createOrder, createQpayInvoice } from "@/lib/api";
+import { checkOrderPayment, createQpayInvoice } from "@/lib/api";
 import { formatMnt } from "@/lib/format";
 
 export function CheckoutView() {
   const { items, total, clear } = useCart();
   const [status, setStatus] = useState<"idle" | "ok" | "paid" | "error">("idle");
   const [invoice, setInvoice] = useState<{ qpayUrl?: string; orderId?: number } | null>(null);
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
     fb: "",
     email: "",
@@ -96,21 +97,19 @@ export function CheckoutView() {
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
+    setError("");
     try {
       const payload = {
         ...form,
         orderedProducts: items.map((p) => `${p.name}:${p.quantity}`).join(","),
         price: Number(total.toFixed(2)),
       };
-      try {
-        const qpay = await createQpayInvoice(payload);
-        setInvoice(qpay);
-      } catch {
-        await createOrder(payload);
-      }
+      const qpay = await createQpayInvoice(payload);
+      setInvoice(qpay);
       clear();
       setStatus("ok");
-    } catch {
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Захиалга илгээхэд алдаа гарлаа.");
       setStatus("error");
     }
   }
@@ -154,8 +153,8 @@ export function CheckoutView() {
         <button className="bg-brand px-8 py-3 text-xs uppercase tracking-[0.18em] text-cream">
           Баталгаажуулах
         </button>
-        {status === "error" ? (
-          <p className="text-sm text-accent">Захиалга илгээхэд алдаа гарлаа.</p>
+        {error ? (
+          <p className="text-sm text-accent">{error}</p>
         ) : null}
       </form>
       <aside className="h-fit bg-cream p-6">

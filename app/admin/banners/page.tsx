@@ -55,6 +55,7 @@ export default function AdminBannersPage() {
 
   const sliders = banners.filter((b) => b.type === "slider");
   const monthly = banners.filter((b) => b.type === "monthly");
+  const videos = banners.filter((b) => b.type === "video");
 
   async function load() {
     setBanners(await adminFetch<Banner[]>("/banner/list-all"));
@@ -128,6 +129,25 @@ export default function AdminBannersPage() {
     }
   }
 
+  async function addVideoFile(file: File) {
+    setError("");
+    try {
+      const uploaded = await adminUpload(file);
+      for (const existing of videos) {
+        if (existing.id) {
+          await adminFetch(`/banner/delete/${existing.id}`, { method: "DELETE" });
+        }
+      }
+      await adminFetch("/banner/add", {
+        method: "POST",
+        body: JSON.stringify({ url: uploaded.path, type: "video" }),
+      });
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Видео оруулж чадсангүй");
+    }
+  }
+
   async function remove(id?: number) {
     if (!id || !confirm("Устгах уу?")) return;
     await adminFetch(`/banner/delete/${id}`, { method: "DELETE" });
@@ -159,7 +179,7 @@ export default function AdminBannersPage() {
       <div>
         <h1 className="font-display text-4xl">Нүүр хуудас</h1>
         <p className="mt-2 text-sm text-muted">
-          Hero слайдын зураг, гарчиг, товчийг эндээс удирдана.
+          Hero слайдын зураг, гарчиг, товч, видео шторкийг эндээс удирдана.
         </p>
       </div>
 
@@ -291,6 +311,40 @@ export default function AdminBannersPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      <section>
+        <h2 className="font-display text-2xl">Видео шторк</h2>
+        <p className="mt-1 text-sm text-muted">
+          Нүүр хуудсан дээр сарын баннерын дараа, үйлчилгээний өмнө тоглоно. MP4, 50MB хүртэл.
+        </p>
+        <label className="mt-4 inline-flex cursor-pointer border border-line bg-cream px-4 py-2 text-sm">
+          {videos.length ? "Видео солих" : "Видео оруулах"}
+          <input
+            type="file"
+            accept="video/mp4,video/webm"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) addVideoFile(file);
+              e.target.value = "";
+            }}
+          />
+        </label>
+        {videos[0] ? (
+          <div className="mt-6 border border-line bg-cream p-3">
+            <video src={videos[0].url} className="h-56 w-full object-cover" muted controls />
+            <button
+              type="button"
+              onClick={() => remove(videos[0].id)}
+              className="mt-2 text-xs uppercase tracking-[0.12em] text-accent"
+            >
+              Устгах
+            </button>
+          </div>
+        ) : (
+          <p className="mt-4 text-sm text-muted">Видео оруулаагүй үед энэ хэсэг нүүр хуудсанд харагдахгүй.</p>
+        )}
       </section>
     </div>
   );

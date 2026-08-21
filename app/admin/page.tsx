@@ -4,7 +4,7 @@ export default function AdminHomePage() {
   const cards = [
     { href: "/admin/products", label: "Бараа", text: "Нэмэх, засах, устгах" },
     { href: "/admin/categories", label: "Категори", text: "Ангилал удирдах" },
-    { href: "/admin/banners", label: "Нүүр хуудас", text: "Hero слайд, баннер" },
+    { href: "/admin/banners", label: "Нүүр хуудас", text: "Hero слайд, баннер, видео" },
     { href: "/admin/orders", label: "Захиалга", text: "Төлбөр, хүргэлт" },
   ];
 

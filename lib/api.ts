@@ -66,7 +66,12 @@ export async function createQpayInvoice(data: Record<string, unknown>) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error("QPay failed");
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(
+      (body as { message?: string }).message || "QPay нэхэмжлэх үүсгэж чадсангүй",
+    );
+  }
   return res.json() as Promise<{
     qpayUrl?: string;
     qpayText?: string;

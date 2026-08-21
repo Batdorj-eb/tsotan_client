@@ -48,7 +48,8 @@ export function ShopCatalog({
       list = list.filter((p) => p.name.toLowerCase().includes(q));
     }
     if (sort === "low2high") list = [...list].sort((a, b) => a.price - b.price);
-    if (sort === "high2low") list = [...list].sort((a, b) => b.price - a.price);
+    else if (sort === "high2low") list = [...list].sort((a, b) => b.price - a.price);
+    else list = [...list].sort((a, b) => Number(Boolean(b.isSpecial)) - Number(Boolean(a.isSpecial)));
     return list;
   }, [products, parent, child, category, onlyNew, query, sort]);
 
@@ -59,10 +60,14 @@ export function ShopCatalog({
   const to = Math.min(current * PAGE_SIZE, filtered.length);
 
   return (
-    <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 lg:grid-cols-[240px_1fr] lg:px-8">
+    <div
+      className={`mx-auto max-w-7xl gap-12 px-5 py-16 lg:px-8 lg:py-20 ${
+        onlyNew ? "" : "grid lg:grid-cols-[220px_1fr]"
+      }`}
+    >
       {!onlyNew ? (
-        <aside>
-          <h2 className="text-xs uppercase tracking-[0.2em] text-muted">Хайлт</h2>
+        <aside className="lg:sticky lg:top-28 lg:self-start">
+          <h2 className="text-[11px] uppercase tracking-[0.22em] text-muted">Хайлт</h2>
           <input
             value={query}
             onChange={(e) => {
@@ -70,16 +75,16 @@ export function ShopCatalog({
               setPage(1);
             }}
             placeholder="Бараа хайх..."
-            className="mt-3 w-full border border-line bg-cream px-3 py-2.5 text-sm outline-none focus:border-brand"
+            className="mt-3 w-full border-0 border-b border-line bg-transparent px-0 py-2.5 text-sm outline-none focus:border-brand"
           />
-          <h2 className="mt-10 text-xs uppercase tracking-[0.2em] text-muted">
-            Үндсэн категори
+          <h2 className="mt-12 text-[11px] uppercase tracking-[0.22em] text-muted">
+            Ангилал
           </h2>
-          <ul className="mt-4 space-y-2">
+          <ul className="mt-5 space-y-2.5">
             <li>
               <Link
                 href="/shop"
-                className={`text-sm ${!parent ? "text-brand" : "text-ink hover:text-brand"}`}
+                className={`text-sm ${!parent ? "text-brand" : "text-ink/70 hover:text-brand"}`}
               >
                 Бүгд
               </Link>
@@ -89,7 +94,7 @@ export function ShopCatalog({
                 <Link
                   href={`/shop?parent=${encodeURIComponent(cat.name)}`}
                   className={`text-sm ${
-                    parent === cat.name ? "text-brand" : "text-ink hover:text-brand"
+                    parent === cat.name ? "text-brand" : "text-ink/70 hover:text-brand"
                   }`}
                 >
                   {cat.name}
@@ -98,25 +103,23 @@ export function ShopCatalog({
             ))}
           </ul>
         </aside>
-      ) : (
-        <div className="hidden lg:block" />
-      )}
+      ) : null}
 
       <div>
-        <div className="flex flex-col gap-4 border-b border-line pb-5 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-4 border-b border-line pb-8 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-[11px] uppercase tracking-[0.22em] text-gold">Дэлгүүр</p>
-            <h1 className="mt-2 font-display text-4xl text-ink">{title}</h1>
-            <p className="mt-2 text-sm text-muted">
+            <h1 className="mt-2 font-display text-4xl text-ink sm:text-5xl">{title}</h1>
+            <p className="mt-3 text-sm text-muted">
               {from}–{to} / {filtered.length} бараа
             </p>
           </div>
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
-            className="border border-line bg-cream px-3 py-2 text-sm outline-none"
+            className="border-0 border-b border-line bg-transparent px-0 py-2 text-sm outline-none"
           >
-            <option value="default">Үнээр эрэмблэх</option>
+            <option value="default">Онцгой эхэнд</option>
             <option value="low2high">Үнэ — Багаас их рүү</option>
             <option value="high2low">Үнэ — Ихээс бага руу</option>
           </select>
@@ -125,7 +128,7 @@ export function ShopCatalog({
         {visible.length === 0 ? (
           <p className="py-24 text-center text-muted">Бараа олдсонгүй.</p>
         ) : (
-          <div className="mt-8 grid gap-x-6 gap-y-12 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-12 grid gap-x-8 gap-y-14 sm:grid-cols-2 xl:grid-cols-3">
             {visible.map((product) => (
               <ProductCard key={String(product.id)} product={product} />
             ))}
