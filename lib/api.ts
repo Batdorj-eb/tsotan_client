@@ -1,5 +1,5 @@
-import { site } from "./site";
-import type { Banner, Category, ContactPage, Product } from "./types";
+import { services as fallbackServices, site } from "./site";
+import type { Banner, Category, ContactPage, Product, ServicePage } from "./types";
 
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
@@ -39,6 +39,24 @@ export function getCategoriesByParent(id: number | string) {
 
 export function getBanners(type: "slider" | "monthly" | "video") {
   return getJson<Banner[]>(`/banner/list?type=${type}`, [], "no-store");
+}
+
+export function getServicePage() {
+  return getJson<ServicePage>(
+    "/mail/service",
+    {
+      title: "Манай үйлчилгээ",
+      intro: "Хэвлэл, хатгамал, лазер болон захиалгат бүтээгдэхүүний үйлчилгээ.",
+      items: fallbackServices.map((item, i) => ({
+        id: i + 1,
+        title: item.title,
+        image: item.image,
+        path: item.image,
+        sortOrder: i + 1,
+      })),
+    },
+    "no-store",
+  );
 }
 
 export function getContactPage() {

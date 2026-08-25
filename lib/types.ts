@@ -21,6 +21,7 @@ export type Product = {
   categoryId?: number;
   isNew?: boolean;
   isSpecial?: boolean;
+  stock?: number | null;
 };
 
 export type Banner = {
@@ -44,6 +45,32 @@ export type CartItem = {
   usdPrice?: number;
   img?: string;
   quantity: number;
+  stock?: number | null;
+};
+
+export type OrderItem = {
+  id?: number | string;
+  name: string;
+  quantity: number;
+  price?: number;
+  img?: string;
+};
+
+export type Order = {
+  id: number;
+  phoneNumber?: string;
+  customerName?: string;
+  fb?: string;
+  email?: string;
+  address?: string;
+  comment?: string;
+  orderedProducts?: string;
+  items?: OrderItem[];
+  price: number;
+  orderState: string;
+  createdAt: string;
+  qpayInvoiceId?: string;
+  transactionInfo?: string;
 };
 
 export type ContactPage = {
@@ -56,4 +83,18 @@ export type ContactPage = {
   hours?: string;
   mapEmbed?: string;
   formTitle?: string;
+};
+
+export type ServiceItem = {
+  id: number;
+  title: string;
+  image: string;
+  path?: string;
+  sortOrder?: number;
+};
+
+export type ServicePage = {
+  title: string;
+  intro: string;
+  items: ServiceItem[];
 };

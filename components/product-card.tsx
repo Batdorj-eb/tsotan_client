@@ -26,9 +26,14 @@ export function ProductCard({ product }: { product: Product }) {
               Онцгой
             </span>
           ) : null}
-          {product.isNew ? (
+        {product.isNew ? (
             <span className="bg-cream px-2 py-1 text-[10px] uppercase tracking-[0.16em] text-brand">
               Шинэ
+            </span>
+          ) : null}
+          {product.stock === 0 ? (
+            <span className="bg-accent px-2 py-1 text-[10px] uppercase tracking-[0.16em] text-cream">
+              Дууссан
             </span>
           ) : null}
         </div>

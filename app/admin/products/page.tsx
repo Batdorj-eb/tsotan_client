@@ -38,6 +38,7 @@ export default function AdminProductsPage() {
             <tr>
               <th className="py-3">Нэр</th>
               <th>Үнэ</th>
+              <th>Нөөц</th>
               <th>Категори</th>
               <th />
             </tr>
@@ -47,6 +48,7 @@ export default function AdminProductsPage() {
               <tr key={String(p.id)} className="border-b border-line">
                 <td className="py-3">{p.name}</td>
                 <td>{formatMnt(p.price)}</td>
+                <td>{p.stock == null ? "—" : p.stock}</td>
                 <td>{p.parentCategory}</td>
                 <td className="text-right">
                   <Link href={`/admin/products/${p.id}`} className="mr-3 text-brand">Засах</Link>

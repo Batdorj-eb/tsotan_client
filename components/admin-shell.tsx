@@ -12,6 +12,7 @@ const links = [
   { href: "/admin/categories", label: "Категори" },
   { href: "/admin/banners", label: "Нүүр хуудас" },
   { href: "/admin/orders", label: "Захиалга" },
+  { href: "/admin/services", label: "Үйлчилгээ" },
   { href: "/admin/contact", label: "Холбоо барих" },
   { href: "/admin/messages", label: "Санал хүсэлт" },
 ];

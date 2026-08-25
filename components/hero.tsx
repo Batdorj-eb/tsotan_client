@@ -62,8 +62,7 @@ export function Hero({ banners }: { banners: Banner[] }) {
               active ? "z-10 opacity-100" : "z-0 opacity-0"
             }`}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={slide.image} alt="" className="h-full w-full object-cover" />
+            <img src={slide.image} alt="" className="h-full w-full origin-center object-contain" />
             <div className="absolute inset-0 bg-brand-dark/45" />
           </div>
         );

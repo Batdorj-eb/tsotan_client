@@ -12,6 +12,11 @@ import type { CartItem } from "@/lib/types";
 
 const STORAGE_KEY = "tsotan-cart";
 
+function capQuantity(quantity: number, stock?: number | null) {
+  if (stock == null) return Math.max(0, quantity);
+  return Math.max(0, Math.min(quantity, stock));
+}
+
 type CartContextValue = {
   items: CartItem[];
   count: number;
@@ -59,14 +64,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
       add: (item, quantity = 1) => {
         setItems((prev) => {
           const found = prev.find((p) => String(p.id) === String(item.id));
+          const stock = item.stock ?? found?.stock;
           if (found) {
             return prev.map((p) =>
               String(p.id) === String(item.id)
-                ? { ...p, quantity: p.quantity + quantity }
+                ? {
+                    ...p,
+                    ...item,
+                    quantity: capQuantity(p.quantity + quantity, stock),
+                  }
                 : p,
             );
           }
-          return [...prev, { ...item, quantity }];
+          const next = capQuantity(quantity, stock);
+          if (next <= 0) return prev;
+          return [...prev, { ...item, quantity: next }];
         });
         setOpen(true);
       },
@@ -77,7 +89,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setItems((prev) =>
           prev
             .map((p) =>
-              String(p.id) === String(id) ? { ...p, quantity } : p,
+              String(p.id) === String(id)
+                ? { ...p, quantity: capQuantity(quantity, p.stock) }
+                : p,
             )
             .filter((p) => p.quantity > 0),
         );

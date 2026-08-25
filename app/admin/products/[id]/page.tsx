@@ -43,6 +43,7 @@ export default function ProductFormPage() {
     instruction: "",
     isNew: true,
     isSpecial: false,
+    stock: "",
   });
 
   useEffect(() => {
@@ -63,6 +64,7 @@ export default function ProductFormPage() {
           instruction: p.instruction || "",
           isNew: Boolean(p.isNew),
           isSpecial: Boolean(p.isSpecial),
+          stock: p.stock == null ? "" : String(p.stock),
         });
         setImages(
           (p.image || []).filter(Boolean).map((url, index) => ({
@@ -164,6 +166,7 @@ export default function ProductFormPage() {
         ...form,
         price: Number(form.price),
         categoryId: Number(form.categoryId),
+        stock: form.stock === "" ? null : Number(form.stock),
         images: paths,
       };
       if (id) {
@@ -201,6 +204,15 @@ export default function ProductFormPage() {
         placeholder="Үнэ"
         value={form.price}
         onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
+        className="w-full border border-line bg-cream px-3 py-3 text-sm"
+      />
+      <input
+        required={!id}
+        type="number"
+        min={0}
+        placeholder="Нөөц (ширхэг)"
+        value={form.stock}
+        onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))}
         className="w-full border border-line bg-cream px-3 py-3 text-sm"
       />
       <select

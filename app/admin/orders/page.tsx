@@ -1,18 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import { OrderStateBadge } from "@/components/order-state-badge";
 import { adminFetch } from "@/lib/admin";
 import { formatMnt } from "@/lib/format";
-
-type Order = {
-  id: number;
-  phoneNumber: string;
-  orderedProducts: string;
-  price: number;
-  address: string;
-  orderState: string;
-  createdAt: string;
-};
+import type { Order } from "@/lib/types";
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -50,6 +43,7 @@ export default function AdminOrdersPage() {
           <thead className="border-b border-line text-[11px] uppercase tracking-[0.14em] text-muted">
             <tr>
               <th className="py-3">#</th>
+              <th>Нэр</th>
               <th>Утас</th>
               <th>Бараа</th>
               <th>Үнэ</th>
@@ -60,15 +54,45 @@ export default function AdminOrdersPage() {
           <tbody>
             {orders.map((o) => (
               <tr key={o.id} className="border-b border-line">
-                <td className="py-3">{o.id}</td>
+                <td className="py-3">
+                  <Link href={`/admin/orders/${o.id}`} className="cursor-pointer text-brand hover:underline">
+                    {o.id}
+                  </Link>
+                </td>
+                <td>{o.customerName || o.fb || "—"}</td>
                 <td>{o.phoneNumber}</td>
-                <td className="max-w-xs truncate">{o.orderedProducts}</td>
+                <td className="max-w-xs truncate">
+                  {o.items?.length
+                    ? o.items.map((item) => `${item.name} × ${item.quantity}`).join(", ")
+                    : o.orderedProducts}
+                </td>
                 <td>{formatMnt(o.price)}</td>
-                <td>{o.orderState}</td>
+                <td>
+                  <OrderStateBadge state={o.orderState} />
+                </td>
                 <td className="space-x-2 text-right">
-                  <button onClick={() => checkPay(o.id)} className="text-brand">QPay</button>
-                  <button onClick={() => setState(o.id, "PAID")} className="text-brand">Paid</button>
-                  <button onClick={() => setState(o.id, "CANCELLED")} className="text-accent">Цуцлах</button>
+                  <Link href={`/admin/orders/${o.id}`} className="cursor-pointer text-brand hover:underline">
+                    Дэлгэрэнгүй
+                  </Link>
+                  {o.orderState === "CREATED" ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => checkPay(o.id)}
+                        className="cursor-pointer text-brand hover:underline"
+                        title="QPay-аас төлбөр орсон эсэхийг шалгана"
+                      >
+                        Төлбөр шалгах
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setState(o.id, "CANCELLED")}
+                        className="cursor-pointer text-accent hover:underline"
+                      >
+                        Цуцлах
+                      </button>
+                    </>
+                  ) : null}
                 </td>
               </tr>
             ))}

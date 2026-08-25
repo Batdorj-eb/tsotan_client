@@ -10,6 +10,8 @@ export function ProductBuyBox({ product }: { product: Product }) {
   const [qty, setQty] = useState(1);
   const images = product.image?.length ? product.image : product.img ? [product.img] : [];
   const [active, setActive] = useState(0);
+  const maxQty = product.stock == null ? undefined : product.stock;
+  const outOfStock = maxQty === 0;
 
   return (
     <div className="mx-auto grid max-w-7xl gap-12 px-5 py-16 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-20">
@@ -61,15 +63,27 @@ export function ProductBuyBox({ product }: { product: Product }) {
 
         <div className="mt-8 flex items-center gap-3">
           <div className="flex border border-line">
-            <button className="px-3 py-3" onClick={() => setQty((q) => Math.max(1, q - 1))}>
+            <button
+              type="button"
+              className="px-3 py-3"
+              onClick={() => setQty((q) => Math.max(1, q - 1))}
+            >
               −
             </button>
             <span className="w-10 py-3 text-center text-sm">{qty}</span>
-            <button className="px-3 py-3" onClick={() => setQty((q) => q + 1)}>
+            <button
+              type="button"
+              className="px-3 py-3"
+              onClick={() =>
+                setQty((q) => (maxQty == null ? q + 1 : Math.min(maxQty, q + 1)))
+              }
+            >
               +
             </button>
           </div>
           <button
+            type="button"
+            disabled={outOfStock}
             onClick={() =>
               add(
                 {
@@ -78,15 +92,19 @@ export function ProductBuyBox({ product }: { product: Product }) {
                   price: product.price,
                   usdPrice: product.usdPrice,
                   img: productImage(product),
+                  stock: product.stock,
                 },
                 qty,
               )
             }
-            className="bg-brand px-8 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-cream hover:bg-brand-dark"
+            className="bg-brand px-8 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-cream hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Сагсанд нэмэх
+            {outOfStock ? "Дууссан" : "Сагсанд нэмэх"}
           </button>
         </div>
+        {maxQty != null && !outOfStock ? (
+          <p className="mt-3 text-xs text-muted">Үлдсэн нөөц: {maxQty}</p>
+        ) : null}
 
         <dl className="mt-10 space-y-3 border-t border-line pt-8 text-sm">
           {product.size ? (

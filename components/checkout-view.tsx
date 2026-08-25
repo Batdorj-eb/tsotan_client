@@ -101,6 +101,13 @@ export function CheckoutView() {
     try {
       const payload = {
         ...form,
+        items: items.map((p) => ({
+          id: p.id,
+          name: p.name,
+          quantity: p.quantity,
+          price: p.price,
+          img: p.img || "",
+        })),
         orderedProducts: items.map((p) => `${p.name}:${p.quantity}`).join(","),
         price: Number(total.toFixed(2)),
       };
@@ -119,14 +126,14 @@ export function CheckoutView() {
       <form onSubmit={onSubmit} className="space-y-5">
         <h1 className="font-display text-4xl">Төлбөр төлөх</h1>
         {[
-          ["fb", "Facebook Name"],
-          ["email", "Email"],
-          ["phoneNumber", "Утас"],
-        ].map(([key, label]) => (
-          <label key={key} className="block text-xs uppercase tracking-[0.16em] text-muted">
+          ["fb", "Нэр", true],
+          ["email", "Имэйл", false],
+          ["phoneNumber", "Утас", true],
+        ].map(([key, label, required]) => (
+          <label key={String(key)} className="block text-xs uppercase tracking-[0.16em] text-muted">
             {label}
             <input
-              required
+              required={Boolean(required)}
               type={key === "email" ? "email" : "text"}
               value={form[key as keyof typeof form]}
               onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
@@ -137,6 +144,7 @@ export function CheckoutView() {
         <label className="block text-xs uppercase tracking-[0.16em] text-muted">
           Хаяг
           <textarea
+            required
             value={form.address}
             onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
             className="mt-2 h-24 w-full border border-line bg-cream px-3 py-3 text-sm outline-none focus:border-brand"

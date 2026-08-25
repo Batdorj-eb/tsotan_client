@@ -49,9 +49,20 @@ export function CartView() {
                 <td>{formatMnt(item.price)}</td>
                 <td>
                   <div className="inline-flex border border-line">
-                    <button className="px-2 py-1" onClick={() => setQuantity(item.id, item.quantity - 1)}>−</button>
+                    <button
+                      className="px-2 py-1 disabled:opacity-40"
+                      onClick={() => setQuantity(item.id, item.quantity - 1)}
+                    >
+                      −
+                    </button>
                     <span className="w-8 py-1 text-center">{item.quantity}</span>
-                    <button className="px-2 py-1" onClick={() => setQuantity(item.id, item.quantity + 1)}>+</button>
+                    <button
+                      className="px-2 py-1 disabled:opacity-40"
+                      disabled={item.stock != null && item.quantity >= item.stock}
+                      onClick={() => setQuantity(item.id, item.quantity + 1)}
+                    >
+                      +
+                    </button>
                   </div>
                 </td>
                 <td>{formatMnt(item.price * item.quantity)}</td>

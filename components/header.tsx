@@ -60,10 +60,9 @@ export function Header({ categories }: { categories: Category[] }) {
           : "bg-transparent text-cream"
       }`}
     >
-      <div className="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-6 px-5 py-2 lg:px-8 lg:py-3">
+      <div className="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-6 px-5 py-2 lg:px-8 lg:py-0">
         <Link href="/" className="flex items-center shrink-0 lg:h-14">
           {solid ? (
-            // eslint-disable-next-line @next/next/no-img-element
             <img src="/logo.jpg" alt="Tsotan" className="block h-11 w-auto object-contain sm:h-12 lg:h-14" />
           ) : (
             <span className="font-display text-3xl leading-none tracking-wide text-cream sm:text-4xl">
