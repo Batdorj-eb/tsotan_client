@@ -125,18 +125,20 @@ export function CheckoutView() {
     <div className="mx-auto grid max-w-6xl gap-12 px-5 py-16 lg:grid-cols-[1fr_360px] lg:px-8">
       <form onSubmit={onSubmit} className="space-y-5">
         <h1 className="font-display text-4xl">Төлбөр төлөх</h1>
-        {[
-          ["fb", "Нэр", true],
-          ["email", "Имэйл", false],
-          ["phoneNumber", "Утас", true],
-        ].map(([key, label, required]) => (
-          <label key={String(key)} className="block text-xs uppercase tracking-[0.16em] text-muted">
-            {label}
+        {(
+          [
+            { key: "fb", label: "Нэр", required: true },
+            { key: "email", label: "Имэйл", required: false },
+            { key: "phoneNumber", label: "Утас", required: true },
+          ] as const
+        ).map((field) => (
+          <label key={field.key} className="block text-xs uppercase tracking-[0.16em] text-muted">
+            {field.label}
             <input
-              required={Boolean(required)}
-              type={key === "email" ? "email" : "text"}
-              value={form[key as keyof typeof form]}
-              onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
+              required={field.required}
+              type={field.key === "email" ? "email" : "text"}
+              value={form[field.key]}
+              onChange={(e) => setForm((f) => ({ ...f, [field.key]: e.target.value }))}
               className="mt-2 w-full border border-line bg-cream px-3 py-3 text-sm outline-none focus:border-brand"
             />
           </label>
