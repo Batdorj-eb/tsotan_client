@@ -1,4 +1,5 @@
-import type { Banner, Category, Product } from "./types";
+import { site } from "./site";
+import type { Banner, Category, ContactPage, Product } from "./types";
 
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
@@ -38,6 +39,24 @@ export function getCategoriesByParent(id: number | string) {
 
 export function getBanners(type: "slider" | "monthly" | "video") {
   return getJson<Banner[]>(`/banner/list?type=${type}`, [], "no-store");
+}
+
+export function getContactPage() {
+  return getJson<ContactPage>(
+    "/mail/contact",
+    {
+      title: "Холбоо барих",
+      intro: "",
+      phone: site.phone,
+      email: site.email,
+      address: site.address.join("\n"),
+      hours: "",
+      mapEmbed:
+        "https://maps.google.com/maps?q=ulaanbaatar%20tsotan%20textile&t=&z=16&ie=UTF8&iwloc=&output=embed",
+      formTitle: "Санал хүсэлт",
+    },
+    "no-store",
+  );
 }
 
 export async function sendMail(data: { suggest: string; phoneNumber: string }) {

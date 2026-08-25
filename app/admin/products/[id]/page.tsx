@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { adminFetch, getAdminToken } from "@/lib/admin";
 import { API_URL } from "@/lib/api";
+import { toast } from "@/lib/toast";
 import type { Category, Product } from "@/lib/types";
 
 type GalleryItem = {
@@ -136,6 +137,7 @@ export default function ProductFormPage() {
       setImages((prev) => prev.filter((img) => !pending.some((item) => item.id === img.id)));
       pending.forEach((item) => URL.revokeObjectURL(item.preview));
       setError(err instanceof Error ? err.message : "Зураг оруулж чадсангүй");
+      toast(err instanceof Error ? err.message : "Зураг оруулж чадсангүй", "error");
     }
   }
 
@@ -150,6 +152,7 @@ export default function ProductFormPage() {
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     if (images.some((img) => img.uploading)) {
+      toast("Зураг хуулагдаж дуустал хүлээнэ үү", "error");
       setError("Зураг хуулагдаж дуустал хүлээнэ үү");
       return;
     }

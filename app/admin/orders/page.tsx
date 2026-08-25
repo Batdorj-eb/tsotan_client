@@ -29,12 +29,16 @@ export default function AdminOrdersPage() {
   }, []);
 
   async function setState(id: number, state: string) {
-    await adminFetch(`/order/update-state/${id}?state=${state}`);
+    await adminFetch(
+      `/order/update-state/${id}?state=${state}`,
+      {},
+      { success: "Төлөв шинэчлэгдлээ" },
+    );
     await load();
   }
 
   async function checkPay(id: number) {
-    await adminFetch(`/order/check-payment/${id}`);
+    await adminFetch(`/order/check-payment/${id}`, {}, { success: "Төлбөр шалгалаа" });
     await load();
   }
 

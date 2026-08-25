@@ -6,6 +6,8 @@ export default function AdminHomePage() {
     { href: "/admin/categories", label: "Категори", text: "Ангилал удирдах" },
     { href: "/admin/banners", label: "Нүүр хуудас", text: "Hero слайд, баннер, видео" },
     { href: "/admin/orders", label: "Захиалга", text: "Төлбөр, хүргэлт" },
+    { href: "/admin/contact", label: "Холбоо барих", text: "Хаяг, утас, газрын зураг" },
+    { href: "/admin/messages", label: "Санал хүсэлт", text: "Contact формын ирүүлэлт" },
   ];
 
   return (

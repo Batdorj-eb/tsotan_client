@@ -29,6 +29,11 @@ export function Footer() {
               </Link>
             </li>
             <li>
+              <Link href="/service" className="transition hover:text-cream">
+                Үйлчилгээ
+              </Link>
+            </li>
+            <li>
               <Link href="/contact" className="transition hover:text-cream">
                 Холбоо барих
               </Link>

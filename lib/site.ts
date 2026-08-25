@@ -20,7 +20,7 @@ export const nav = [
   { href: "/", label: "Нүүр хуудас" },
   { href: "/shop-new", label: "Шинэ бараа" },
   { href: "/shop", label: "Бүтээгдэхүүн", mega: true },
-  { href: "/#service", label: "Үйлчилгээ" },
+  { href: "/service", label: "Үйлчилгээ" },
   { href: "/#social", label: "Сошиал" },
   { href: "/contact", label: "Холбоо барих" },
 ];

@@ -1,4 +1,5 @@
 import { API_URL } from "./api";
+import { toast } from "./toast";
 
 const TOKEN_KEY = "tsotan-admin-token";
 
@@ -15,7 +16,11 @@ export function clearAdminToken() {
   localStorage.removeItem(TOKEN_KEY);
 }
 
-export async function adminFetch<T>(path: string, init: RequestInit = {}) {
+export async function adminFetch<T>(
+  path: string,
+  init: RequestInit = {},
+  opts: { silent?: boolean; success?: string } = {},
+) {
   const res = await fetch(`${API_URL}${path}`, {
     ...init,
     headers: {
@@ -33,7 +38,18 @@ export async function adminFetch<T>(path: string, init: RequestInit = {}) {
   }
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error((body as { message?: string }).message || "Хүсэлт амжилтгүй");
+    const message = (body as { message?: string }).message || "Хүсэлт амжилтгүй";
+    if (!opts.silent) toast(message, "error");
+    throw new Error(message);
+  }
+  const method = String(init.method || "GET").toUpperCase();
+  const mutating = ["POST", "PUT", "PATCH", "DELETE"].includes(method);
+  const isUpload = path.includes("/upload");
+  if (!opts.silent) {
+    if (opts.success) toast(opts.success);
+    else if (mutating && !isUpload) {
+      toast(method === "DELETE" ? "Устгалаа" : "Хадгаллаа");
+    }
   }
   return res.json() as Promise<T>;
 }

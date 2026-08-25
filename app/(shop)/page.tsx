@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Hero } from "@/components/hero";
 import { ProductCard } from "@/components/product-card";
-import { ServiceStrip } from "@/components/service-strip";
 import { VideoStory } from "@/components/video-story";
 import { getBanners, getProducts } from "@/lib/api";
 
@@ -18,7 +17,7 @@ export default async function Home() {
   const monthlySlots = [monthly[0] || null, monthly[1] || null];
   const fallbackBanners = [
     { href: "/shop-new", label: "Шинэ бараа", text: "Энэ улирлын шинэ бүтээл" },
-    { href: "/#service", label: "Үйлчилгээ", text: "Хэвлэл, хатгамал, лазер" },
+    { href: "/service", label: "Үйлчилгээ", text: "Хэвлэл, хатгамал, лазер" },
   ];
 
   return (
@@ -93,8 +92,6 @@ export default async function Home() {
       </section>
 
       <VideoStory src={videos[0]?.url} />
-
-      <ServiceStrip />
 
       <section className="relative overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}

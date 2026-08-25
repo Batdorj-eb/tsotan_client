@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { adminFetch, adminUpload } from "@/lib/admin";
+import { toast } from "@/lib/toast";
 import type { Banner } from "@/lib/types";
 
 type SlideForm = {
@@ -78,7 +79,7 @@ export default function AdminBannersPage() {
   async function saveSlide(e: FormEvent, form: SlideForm, id?: number | null) {
     e.preventDefault();
     if (!form.url) {
-      setError("Зураг оруулна уу");
+      toast("Зураг оруулна уу", "error");
       return;
     }
     setSaving(true);
@@ -135,13 +136,17 @@ export default function AdminBannersPage() {
       const uploaded = await adminUpload(file);
       for (const existing of videos) {
         if (existing.id) {
-          await adminFetch(`/banner/delete/${existing.id}`, { method: "DELETE" });
+          await adminFetch(`/banner/delete/${existing.id}`, { method: "DELETE" }, { silent: true });
         }
       }
-      await adminFetch("/banner/add", {
-        method: "POST",
-        body: JSON.stringify({ url: uploaded.path, type: "video" }),
-      });
+      await adminFetch(
+        "/banner/add",
+        {
+          method: "POST",
+          body: JSON.stringify({ url: uploaded.path, type: "video" }),
+        },
+        { success: "Видео хадгаллаа" },
+      );
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Видео оруулж чадсангүй");
@@ -162,15 +167,24 @@ export default function AdminBannersPage() {
     const a = banner.sortOrder ?? index + 1;
     const b = swap.sortOrder ?? index + direction + 1;
     await Promise.all([
-      adminFetch(`/banner/update/${banner.id}`, {
-        method: "POST",
-        body: JSON.stringify({ sortOrder: b }),
-      }),
-      adminFetch(`/banner/update/${swap.id}`, {
-        method: "POST",
-        body: JSON.stringify({ sortOrder: a }),
-      }),
+      adminFetch(
+        `/banner/update/${banner.id}`,
+        {
+          method: "POST",
+          body: JSON.stringify({ sortOrder: b }),
+        },
+        { silent: true },
+      ),
+      adminFetch(
+        `/banner/update/${swap.id}`,
+        {
+          method: "POST",
+          body: JSON.stringify({ sortOrder: a }),
+        },
+        { silent: true },
+      ),
     ]);
+    toast("Дараалал шинэчлэгдлээ");
     await load();
   }
 
@@ -178,9 +192,6 @@ export default function AdminBannersPage() {
     <div className="max-w-4xl space-y-12">
       <div>
         <h1 className="font-display text-4xl">Нүүр хуудас</h1>
-        <p className="mt-2 text-sm text-muted">
-          Hero слайдын зураг, гарчиг, товч, видео шторкийг эндээс удирдана.
-        </p>
       </div>
 
       {error ? <p className="text-sm text-accent">{error}</p> : null}

@@ -23,9 +23,36 @@ export function Header({ categories }: { categories: Category[] }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const html = document.documentElement;
+    const { body } = document;
+    const scrollY = window.scrollY;
+    html.classList.add("overflow-hidden");
+    body.classList.add("overflow-hidden");
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.left = "0";
+    body.style.right = "0";
+    return () => {
+      html.classList.remove("overflow-hidden");
+      body.classList.remove("overflow-hidden");
+      body.style.position = "";
+      body.style.top = "";
+      body.style.left = "";
+      body.style.right = "";
+      window.scrollTo(0, scrollY);
+    };
+  }, [mobileOpen]);
+
   const solid = scrolled || !isHome || mobileOpen || open;
 
   return (
+    <>
     <header
       className={`sticky top-0 z-50 transition-all duration-500 ${
         solid
@@ -33,30 +60,30 @@ export function Header({ categories }: { categories: Category[] }) {
           : "bg-transparent text-cream"
       }`}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 py-4 lg:px-8">
-        <Link href="/" className="shrink-0">
+      <div className="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-6 px-5 py-2 lg:px-8 lg:py-3">
+        <Link href="/" className="flex items-center shrink-0 lg:h-14">
           {solid ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src="/logo.jpg" alt="Tsotan" className="h-8 w-auto object-contain sm:h-9" />
+            <img src="/logo.jpg" alt="Tsotan" className="block h-11 w-auto object-contain sm:h-12 lg:h-14" />
           ) : (
-            <span className="font-display text-2xl tracking-wide text-cream sm:text-[1.7rem]">
+            <span className="font-display text-3xl leading-none tracking-wide text-cream sm:text-4xl">
               Tsotan
             </span>
           )}
         </Link>
 
-        <nav className="hidden items-center gap-7 lg:flex">
+        <nav className="hidden items-center justify-center gap-8 lg:flex lg:h-14">
           {nav.map((item) =>
             item.mega ? (
               <div
                 key={item.href}
-                className="relative"
+                className="relative flex items-center lg:h-full"
                 onMouseEnter={() => setMegaOpen(true)}
                 onMouseLeave={() => setMegaOpen(false)}
               >
                 <Link
                   href={item.href}
-                  className={`text-[12px] uppercase tracking-[0.18em] transition ${
+                  className={`inline-flex h-full items-center text-[12px] uppercase leading-none tracking-[0.18em] transition ${
                     pathname.startsWith("/shop")
                       ? solid
                         ? "text-brand"
@@ -91,7 +118,7 @@ export function Header({ categories }: { categories: Category[] }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-[12px] uppercase tracking-[0.18em] transition ${
+                className={`inline-flex h-full items-center text-[12px] uppercase leading-none tracking-[0.18em] transition ${
                   pathname === item.href
                     ? solid
                       ? "text-brand"
@@ -107,7 +134,7 @@ export function Header({ categories }: { categories: Category[] }) {
           )}
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-end gap-4 lg:h-14">
           <a
             href={site.phoneHref}
             className={`hidden text-[11px] uppercase tracking-[0.16em] xl:block ${
@@ -134,44 +161,26 @@ export function Header({ categories }: { categories: Category[] }) {
           </button>
           <button
             className="flex flex-col gap-1.5 lg:hidden"
-            onClick={() => setMobileOpen((v) => !v)}
-            aria-label="Цэс"
+            onClick={() => {
+              setOpen(false);
+              setMobileOpen((v) => !v);
+            }}
+            aria-label={mobileOpen ? "Цэс хаах" : "Цэс"}
+            aria-expanded={mobileOpen}
           >
-            <span className={`block h-px w-6 ${solid ? "bg-ink" : "bg-cream"}`} />
-            <span className={`block h-px w-6 ${solid ? "bg-ink" : "bg-cream"}`} />
+            <span
+              className={`block h-px w-6 origin-center transition ${
+                solid ? "bg-ink" : "bg-cream"
+              } ${mobileOpen ? "translate-y-[3.5px] rotate-45" : ""}`}
+            />
+            <span
+              className={`block h-px w-6 origin-center transition ${
+                solid ? "bg-ink" : "bg-cream"
+              } ${mobileOpen ? "-translate-y-[3.5px] -rotate-45" : ""}`}
+            />
           </button>
         </div>
       </div>
-
-      {mobileOpen ? (
-        <div className="border-t border-line bg-paper px-5 py-8 text-ink lg:hidden">
-          <div className="flex flex-col gap-5">
-            {nav.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMobileOpen(false)}
-                className="text-sm uppercase tracking-[0.16em]"
-              >
-                {item.label}
-              </Link>
-            ))}
-            <div className="border-t border-line pt-5">
-              <p className="mb-3 text-[11px] uppercase tracking-[0.2em] text-muted">Ангилал</p>
-              {categories.slice(0, 10).map((cat) => (
-                <Link
-                  key={cat.id}
-                  href={`/shop?parent=${encodeURIComponent(cat.name)}`}
-                  onClick={() => setMobileOpen(false)}
-                  className="block py-1.5 text-sm text-muted"
-                >
-                  {cat.name}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      ) : null}
 
       {open ? (
         <div className="absolute right-0 top-full w-full max-w-md border border-line bg-cream p-6 text-ink shadow-[0_24px_80px_rgba(28,22,20,0.14)] sm:right-8">
@@ -234,5 +243,51 @@ export function Header({ categories }: { categories: Category[] }) {
         </div>
       ) : null}
     </header>
+
+    {mobileOpen ? (
+      <div className="fixed inset-0 z-[80] flex flex-col bg-paper text-ink lg:hidden">
+        <div className="flex items-center justify-between px-5 py-4">
+          <Link href="/" onClick={() => setMobileOpen(false)}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.jpg" alt="Tsotan" className="h-11 w-auto object-contain" />
+          </Link>
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="text-xs uppercase tracking-[0.16em] text-muted"
+            aria-label="Цэс хаах"
+          >
+            Хаах
+          </button>
+        </div>
+        <nav className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-10 pt-4">
+          <div className="flex flex-col gap-5">
+            {nav.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setMobileOpen(false)}
+                className="text-sm uppercase tracking-[0.16em] text-ink"
+              >
+                {item.label}
+              </Link>
+            ))}
+            <div className="border-t border-line pt-5">
+              <p className="mb-3 text-[11px] uppercase tracking-[0.2em] text-muted">Ангилал</p>
+              {categories.map((cat) => (
+                <Link
+                  key={cat.id}
+                  href={`/shop?parent=${encodeURIComponent(cat.name)}`}
+                  onClick={() => setMobileOpen(false)}
+                  className="block py-1.5 text-sm text-muted"
+                >
+                  {cat.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </nav>
+      </div>
+    ) : null}
+    </>
   );
 }

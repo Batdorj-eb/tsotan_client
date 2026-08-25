@@ -45,3 +45,15 @@ export type CartItem = {
   img?: string;
   quantity: number;
 };
+
+export type ContactPage = {
+  slug?: string;
+  title?: string;
+  intro?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  hours?: string;
+  mapEmbed?: string;
+  formTitle?: string;
+};

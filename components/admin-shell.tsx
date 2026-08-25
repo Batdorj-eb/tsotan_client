@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { clearAdminToken, getAdminToken } from "@/lib/admin";
+import { AdminToastHost } from "@/components/admin-toast";
 
 const links = [
   { href: "/admin", label: "Хянах самбар" },
@@ -11,6 +12,8 @@ const links = [
   { href: "/admin/categories", label: "Категори" },
   { href: "/admin/banners", label: "Нүүр хуудас" },
   { href: "/admin/orders", label: "Захиалга" },
+  { href: "/admin/contact", label: "Холбоо барих" },
+  { href: "/admin/messages", label: "Санал хүсэлт" },
 ];
 
 export function AdminShell({ children }: { children: ReactNode }) {
@@ -44,7 +47,11 @@ export function AdminShell({ children }: { children: ReactNode }) {
             <Link
               key={link.href}
               href={link.href}
-              className={pathname === link.href ? "text-gold" : "text-cream/80 hover:text-cream"}
+              className={
+                pathname === link.href || (link.href !== "/admin" && pathname.startsWith(link.href))
+                  ? "text-gold"
+                  : "text-cream/80 hover:text-cream"
+              }
             >
               {link.label}
             </Link>
@@ -67,6 +74,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         </div>
         <div className="p-6 lg:p-10">{children}</div>
       </div>
+      <AdminToastHost />
     </div>
   );
 }
