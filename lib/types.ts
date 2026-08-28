@@ -1,23 +1,32 @@
 export type Category = {
   id: number;
   name: string;
+  nameEn?: string;
   parentId?: number;
 };
 
 export type Product = {
   id: number | string;
   name: string;
+  nameEn?: string;
   price: number;
   usdPrice?: number;
   img?: string;
   image?: string[];
   description?: string;
+  descriptionEn?: string;
   instruction?: string;
+  instructionEn?: string;
   size?: string;
+  sizeEn?: string;
   material?: string;
+  materialEn?: string;
   parentCategory?: string;
+  parentCategoryEn?: string;
   childCategory?: string;
+  childCategoryEn?: string;
   category?: string;
+  categoryEn?: string;
   categoryId?: number;
   isNew?: boolean;
   isSpecial?: boolean;
@@ -30,6 +39,7 @@ export type Banner = {
   path?: string;
   type?: string;
   title?: string;
+  titleEn?: string;
   subtitle?: string;
   eyebrow?: string;
   cta?: string;
@@ -41,6 +51,7 @@ export type Banner = {
 export type CartItem = {
   id: number | string;
   name: string;
+  nameEn?: string;
   price: number;
   usdPrice?: number;
   img?: string;
@@ -91,6 +102,7 @@ export type ServiceItem = {
   image: string;
   path?: string;
   sortOrder?: number;
+  parentId?: number;
 };
 
 export type ServicePage = {

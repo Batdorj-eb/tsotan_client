@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { adminFetch } from "@/lib/admin";
+import { useAdminUser } from "@/components/admin-user";
 
 type Message = {
   id: number;
@@ -24,6 +25,7 @@ function formatWhen(value?: string) {
 }
 
 export default function AdminMessagesPage() {
+  const { canDelete } = useAdminUser();
   const [messages, setMessages] = useState<Message[]>([]);
 
   async function load() {
@@ -65,9 +67,11 @@ export default function AdminMessagesPage() {
                   <td className="py-3">{item.phoneNumber || "—"}</td>
                   <td className="max-w-xl py-3 whitespace-pre-wrap">{item.suggest || "—"}</td>
                   <td className="py-3 text-right">
-                    <button onClick={() => remove(item.id)} className="text-accent">
-                      Устгах
-                    </button>
+                    {canDelete ? (
+                      <button onClick={() => remove(item.id)} className="text-accent">
+                        Устгах
+                      </button>
+                    ) : null}
                   </td>
                 </tr>
               ))}

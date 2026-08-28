@@ -36,12 +36,17 @@ export default function ProductFormPage() {
   const [error, setError] = useState("");
   const [form, setForm] = useState({
     name: "",
+    nameEn: "",
     price: "",
     categoryId: "",
     description: "",
+    descriptionEn: "",
     size: "",
+    sizeEn: "",
     material: "",
+    materialEn: "",
     instruction: "",
+    instructionEn: "",
     isNew: true,
     isSpecial: false,
     stock: "",
@@ -57,12 +62,17 @@ export default function ProductFormPage() {
       .then((p) => {
         setForm({
           name: p.name || "",
+          nameEn: p.nameEn || "",
           price: String(p.price || ""),
           categoryId: String(p.categoryId || ""),
           description: p.description || "",
+          descriptionEn: p.descriptionEn || "",
           size: p.size || "",
+          sizeEn: p.sizeEn || "",
           material: p.material || "",
+          materialEn: p.materialEn || "",
           instruction: p.instruction || "",
+          instructionEn: p.instructionEn || "",
           isNew: Boolean(p.isNew),
           isSpecial: Boolean(p.isSpecial),
           stock: p.stock == null ? "" : String(p.stock),
@@ -190,15 +200,31 @@ export default function ProductFormPage() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="max-w-3xl space-y-4">
+    <form onSubmit={onSubmit} className="max-w-4xl space-y-4">
       <h1 className="font-display text-4xl">{id ? "Бараа засах" : "Шинэ бараа"}</h1>
-      <input
-        required
-        placeholder="Нэр"
-        value={form.name}
-        onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-        className="w-full border border-line bg-cream px-3 py-3 text-sm"
-      />
+      <p className="text-sm text-muted">Нэр болон мэдээллийг монгол, англиар оруулна.</p>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="block text-xs uppercase tracking-[0.14em] text-muted">
+          Нэр (MN)
+          <input
+            required
+            placeholder="Монгол нэр"
+            value={form.name}
+            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+            className="mt-2 w-full border border-line bg-cream px-3 py-3 text-sm normal-case tracking-normal text-ink"
+          />
+        </label>
+        <label className="block text-xs uppercase tracking-[0.14em] text-muted">
+          Name (EN)
+          <input
+            required
+            placeholder="English name"
+            value={form.nameEn}
+            onChange={(e) => setForm((f) => ({ ...f, nameEn: e.target.value }))}
+            className="mt-2 w-full border border-line bg-cream px-3 py-3 text-sm normal-case tracking-normal text-ink"
+          />
+        </label>
+      </div>
       <input
         required
         type="number"
@@ -305,32 +331,84 @@ export default function ProductFormPage() {
         ) : null}
       </div>
 
-      <textarea
-        placeholder="Тайлбар"
-        value={form.description}
-        onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-        className="h-24 w-full border border-line bg-cream px-3 py-3 text-sm"
-      />
-      <div className="grid grid-cols-2 gap-3">
-        <input
-          placeholder="Хэмжээ"
-          value={form.size}
-          onChange={(e) => setForm((f) => ({ ...f, size: e.target.value }))}
-          className="border border-line bg-cream px-3 py-3 text-sm"
-        />
-        <input
-          placeholder="Материал"
-          value={form.material}
-          onChange={(e) => setForm((f) => ({ ...f, material: e.target.value }))}
-          className="border border-line bg-cream px-3 py-3 text-sm"
-        />
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="block text-xs uppercase tracking-[0.14em] text-muted">
+          Тайлбар (MN)
+          <textarea
+            placeholder="Тайлбар"
+            value={form.description}
+            onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+            className="mt-2 h-24 w-full border border-line bg-cream px-3 py-3 text-sm normal-case tracking-normal text-ink"
+          />
+        </label>
+        <label className="block text-xs uppercase tracking-[0.14em] text-muted">
+          Description (EN)
+          <textarea
+            placeholder="Description"
+            value={form.descriptionEn}
+            onChange={(e) => setForm((f) => ({ ...f, descriptionEn: e.target.value }))}
+            className="mt-2 h-24 w-full border border-line bg-cream px-3 py-3 text-sm normal-case tracking-normal text-ink"
+          />
+        </label>
       </div>
-      <textarea
-        placeholder="Заавар"
-        value={form.instruction}
-        onChange={(e) => setForm((f) => ({ ...f, instruction: e.target.value }))}
-        className="h-20 w-full border border-line bg-cream px-3 py-3 text-sm"
-      />
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="block text-xs uppercase tracking-[0.14em] text-muted">
+          Хэмжээ (MN)
+          <input
+            placeholder="Хэмжээ"
+            value={form.size}
+            onChange={(e) => setForm((f) => ({ ...f, size: e.target.value }))}
+            className="mt-2 w-full border border-line bg-cream px-3 py-3 text-sm normal-case tracking-normal text-ink"
+          />
+        </label>
+        <label className="block text-xs uppercase tracking-[0.14em] text-muted">
+          Size (EN)
+          <input
+            placeholder="Size"
+            value={form.sizeEn}
+            onChange={(e) => setForm((f) => ({ ...f, sizeEn: e.target.value }))}
+            className="mt-2 w-full border border-line bg-cream px-3 py-3 text-sm normal-case tracking-normal text-ink"
+          />
+        </label>
+        <label className="block text-xs uppercase tracking-[0.14em] text-muted">
+          Материал (MN)
+          <input
+            placeholder="Материал"
+            value={form.material}
+            onChange={(e) => setForm((f) => ({ ...f, material: e.target.value }))}
+            className="mt-2 w-full border border-line bg-cream px-3 py-3 text-sm normal-case tracking-normal text-ink"
+          />
+        </label>
+        <label className="block text-xs uppercase tracking-[0.14em] text-muted">
+          Material (EN)
+          <input
+            placeholder="Material"
+            value={form.materialEn}
+            onChange={(e) => setForm((f) => ({ ...f, materialEn: e.target.value }))}
+            className="mt-2 w-full border border-line bg-cream px-3 py-3 text-sm normal-case tracking-normal text-ink"
+          />
+        </label>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="block text-xs uppercase tracking-[0.14em] text-muted">
+          Заавар (MN)
+          <textarea
+            placeholder="Угаах заавар"
+            value={form.instruction}
+            onChange={(e) => setForm((f) => ({ ...f, instruction: e.target.value }))}
+            className="mt-2 h-20 w-full border border-line bg-cream px-3 py-3 text-sm normal-case tracking-normal text-ink"
+          />
+        </label>
+        <label className="block text-xs uppercase tracking-[0.14em] text-muted">
+          Care (EN)
+          <textarea
+            placeholder="Care instructions"
+            value={form.instructionEn}
+            onChange={(e) => setForm((f) => ({ ...f, instructionEn: e.target.value }))}
+            className="mt-2 h-20 w-full border border-line bg-cream px-3 py-3 text-sm normal-case tracking-normal text-ink"
+          />
+        </label>
+      </div>
       <label className="flex items-center gap-2 text-sm">
         <input
           type="checkbox"

@@ -2,43 +2,45 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useLanguage } from "@/components/language-provider";
 import { heroSlides } from "@/lib/site";
 import type { Banner } from "@/lib/types";
-
-const defaultDescription =
-  "Монголын нэхмэл, хэвлэл, хатгамал болон захиалгат бүтээгдэхүүнийг нэг дороос.";
 
 type Slide = {
   eyebrow: string;
   title: string;
-  subtitle: string;
+  titleEn: string;
   href: string;
   cta: string;
   image: string;
   description: string;
 };
 
-function toSlides(banners: Banner[]): Slide[] {
-  if (banners.length) {
-    return banners.map((banner, i) => ({
-      eyebrow: banner.eyebrow || heroSlides[i]?.eyebrow || "Tsotan",
-      title: banner.title || heroSlides[i]?.title || "",
-      subtitle: banner.subtitle || heroSlides[i]?.subtitle || "",
-      href: banner.href || heroSlides[i]?.href || "/shop",
-      cta: banner.cta || heroSlides[i]?.cta || "Худалдан авах",
-      image: banner.url,
-      description: banner.description || defaultDescription,
-    }));
-  }
-  return heroSlides.map((slide) => ({
-    ...slide,
-    description: defaultDescription,
-  }));
-}
-
 export function Hero({ banners }: { banners: Banner[] }) {
+  const { t, name, text } = useLanguage();
   const [index, setIndex] = useState(0);
-  const slides = toSlides(banners);
+  const defaultDescription = t("home.heroDescription");
+  const defaultCta = t("home.shopNow");
+
+  const slides: Slide[] = banners.length
+    ? banners.map((banner, i) => ({
+        eyebrow: banner.eyebrow || heroSlides[i]?.eyebrow || "Tsotan",
+        title: banner.title || heroSlides[i]?.title || "",
+        titleEn: banner.titleEn || "",
+        href: banner.href || heroSlides[i]?.href || "/shop",
+        cta: name(banner.cta || heroSlides[i]?.cta) || defaultCta,
+        image: banner.url,
+        description: banner.description || defaultDescription,
+      }))
+    : heroSlides.map((slide) => ({
+        eyebrow: slide.eyebrow,
+        title: slide.title,
+        titleEn: "",
+        href: slide.href,
+        cta: name(slide.cta) || defaultCta,
+        image: slide.image,
+        description: defaultDescription,
+      }));
 
   useEffect(() => {
     if (slides.length < 2) return;
@@ -71,7 +73,7 @@ export function Hero({ banners }: { banners: Banner[] }) {
       <div className="relative z-20 mx-auto flex min-h-[78vh] max-w-7xl items-end px-5 pb-16 pt-28 lg:min-h-[86vh] lg:px-8 lg:pb-20">
         {slides.map((slide, i) => {
           const active = i === index;
-          const headline = [slide.title, slide.subtitle].filter(Boolean).join(" ");
+          const headline = text(slide.title, slide.titleEn);
           return (
             <div
               key={`copy-${i}`}
@@ -91,7 +93,7 @@ export function Hero({ banners }: { banners: Banner[] }) {
               </h1>
               {slide.description ? (
                 <p className="mt-4 max-w-md text-sm leading-7 text-cream/75">
-                  {slide.description}
+                  {name(slide.description) || slide.description}
                 </p>
               ) : null}
               {slide.cta ? (
@@ -113,7 +115,7 @@ export function Hero({ banners }: { banners: Banner[] }) {
           {slides.map((_, i) => (
             <button
               key={i}
-              aria-label={`Слайд ${i + 1}`}
+              aria-label={t("home.slide", { n: i + 1 })}
               onClick={() => setIndex(i)}
               className={`h-1 rounded-full transition-all duration-500 ease-out ${
                 i === index ? "w-8 bg-cream" : "w-2.5 bg-cream/40"

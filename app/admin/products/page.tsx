@@ -5,8 +5,10 @@ import { useEffect, useState } from "react";
 import { adminFetch } from "@/lib/admin";
 import { formatMnt } from "@/lib/format";
 import type { Product } from "@/lib/types";
+import { useAdminUser } from "@/components/admin-user";
 
 export default function AdminProductsPage() {
+  const { canDelete } = useAdminUser();
   const [products, setProducts] = useState<Product[]>([]);
 
   async function load() {
@@ -46,7 +48,10 @@ export default function AdminProductsPage() {
           <tbody>
             {products.map((p) => (
               <tr key={String(p.id)} className="border-b border-line">
-                <td className="py-3">{p.name}</td>
+                <td className="py-3">
+                  {p.name}
+                  {p.nameEn ? <span className="ml-2 text-muted">{p.nameEn}</span> : null}
+                </td>
                 <td>{formatMnt(p.price)}</td>
                 <td>{p.stock == null ? "—" : p.stock}</td>
                 <td>
@@ -54,7 +59,9 @@ export default function AdminProductsPage() {
                 </td>
                 <td className="text-right">
                   <Link href={`/admin/products/${p.id}`} className="mr-3 text-brand">Засах</Link>
-                  <button onClick={() => remove(p.id)} className="text-accent">Устгах</button>
+                  {canDelete ? (
+                    <button onClick={() => remove(p.id)} className="text-accent">Устгах</button>
+                  ) : null}
                 </td>
               </tr>
             ))}

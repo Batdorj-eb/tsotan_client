@@ -4,13 +4,14 @@ import { FormEvent, useEffect, useState } from "react";
 import { adminFetch, adminUpload } from "@/lib/admin";
 import { toast } from "@/lib/toast";
 import type { Banner } from "@/lib/types";
+import { useAdminUser } from "@/components/admin-user";
 
 type SlideForm = {
   url: string;
   preview: string;
   eyebrow: string;
   title: string;
-  subtitle: string;
+  titleEn: string;
   description: string;
   cta: string;
   href: string;
@@ -21,7 +22,7 @@ const emptySlide: SlideForm = {
   preview: "",
   eyebrow: "Tsotan",
   title: "",
-  subtitle: "",
+  titleEn: "",
   description: "",
   cta: "Худалдан авах",
   href: "/shop",
@@ -39,7 +40,7 @@ function toForm(banner: Banner): SlideForm {
     preview: banner.url,
     eyebrow: banner.eyebrow || "",
     title: banner.title || "",
-    subtitle: banner.subtitle || "",
+    titleEn: banner.titleEn || "",
     description: banner.description || "",
     cta: banner.cta || "Худалдан авах",
     href: banner.href || "/shop",
@@ -47,6 +48,7 @@ function toForm(banner: Banner): SlideForm {
 }
 
 export default function AdminBannersPage() {
+  const { canDelete } = useAdminUser();
   const [banners, setBanners] = useState<Banner[]>([]);
   const [creating, setCreating] = useState<SlideForm>(emptySlide);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -90,7 +92,7 @@ export default function AdminBannersPage() {
         type: "slider",
         eyebrow: form.eyebrow,
         title: form.title,
-        subtitle: form.subtitle,
+        titleEn: form.titleEn,
         description: form.description,
         cta: form.cta,
         href: form.href,
@@ -134,19 +136,25 @@ export default function AdminBannersPage() {
     setError("");
     try {
       const uploaded = await adminUpload(file);
-      for (const existing of videos) {
-        if (existing.id) {
-          await adminFetch(`/banner/delete/${existing.id}`, { method: "DELETE" }, { silent: true });
-        }
+      if (videos[0]?.id) {
+        await adminFetch(
+          `/banner/update/${videos[0].id}`,
+          {
+            method: "POST",
+            body: JSON.stringify({ url: uploaded.path, type: "video" }),
+          },
+          { success: "Видео хадгаллаа" },
+        );
+      } else {
+        await adminFetch(
+          "/banner/add",
+          {
+            method: "POST",
+            body: JSON.stringify({ url: uploaded.path, type: "video" }),
+          },
+          { success: "Видео хадгаллаа" },
+        );
       }
-      await adminFetch(
-        "/banner/add",
-        {
-          method: "POST",
-          body: JSON.stringify({ url: uploaded.path, type: "video" }),
-        },
-        { success: "Видео хадгаллаа" },
-      );
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Видео оруулж чадсангүй");
@@ -248,10 +256,10 @@ export default function AdminBannersPage() {
                       </p>
                       <h3 className="mt-1 font-display text-2xl">
                         {banner.title || "Гарчиггүй"}
-                        {banner.subtitle ? (
-                          <span className="ml-2 text-brand">{banner.subtitle}</span>
-                        ) : null}
                       </h3>
+                      {banner.titleEn ? (
+                        <p className="mt-0.5 text-sm text-muted">{banner.titleEn}</p>
+                      ) : null}
                       <p className="mt-1 truncate text-sm text-muted">
                         {banner.cta || "Худалдан авах"} → {banner.href || "/shop"}
                       </p>
@@ -272,9 +280,11 @@ export default function AdminBannersPage() {
                         <button type="button" onClick={() => move(banner, 1)} className="text-muted">
                           Доош
                         </button>
-                        <button type="button" onClick={() => remove(banner.id)} className="text-accent">
-                          Устгах
-                        </button>
+                        {canDelete ? (
+                          <button type="button" onClick={() => remove(banner.id)} className="text-accent">
+                            Устгах
+                          </button>
+                        ) : null}
                       </div>
                     </div>
                   </div>
@@ -312,13 +322,15 @@ export default function AdminBannersPage() {
             <div key={banner.id} className="border border-line bg-cream p-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={banner.url} alt="" className="h-40 w-full object-cover" />
-              <button
-                type="button"
-                onClick={() => remove(banner.id)}
-                className="mt-2 text-xs uppercase tracking-[0.12em] text-accent"
-              >
-                Устгах
-              </button>
+              {canDelete ? (
+                <button
+                  type="button"
+                  onClick={() => remove(banner.id)}
+                  className="mt-2 text-xs uppercase tracking-[0.12em] text-accent"
+                >
+                  Устгах
+                </button>
+              ) : null}
             </div>
           ))}
         </div>
@@ -345,13 +357,15 @@ export default function AdminBannersPage() {
         {videos[0] ? (
           <div className="mt-6 border border-line bg-cream p-3">
             <video src={videos[0].url} className="h-56 w-full object-cover" muted controls />
-            <button
-              type="button"
-              onClick={() => remove(videos[0].id)}
-              className="mt-2 text-xs uppercase tracking-[0.12em] text-accent"
-            >
-              Устгах
-            </button>
+            {canDelete ? (
+              <button
+                type="button"
+                onClick={() => remove(videos[0].id)}
+                className="mt-2 text-xs uppercase tracking-[0.12em] text-accent"
+              >
+                Устгах
+              </button>
+            ) : null}
           </div>
         ) : (
           <p className="mt-4 text-sm text-muted">Видео оруулаагүй үед энэ хэсэг нүүр хуудсанд харагдахгүй.</p>
@@ -402,18 +416,18 @@ function SlideFields({
         placeholder="Жижиг гарчиг (eyebrow)"
         value={form.eyebrow}
         onChange={(e) => onChange({ ...form, eyebrow: e.target.value })}
-        className="border border-line bg-cream px-3 py-3 text-sm"
+        className="sm:col-span-2 border border-line bg-cream px-3 py-3 text-sm"
       />
       <input
-        placeholder="Том гарчиг"
+        placeholder="Том гарчиг (MN)"
         value={form.title}
         onChange={(e) => onChange({ ...form, title: e.target.value })}
         className="border border-line bg-cream px-3 py-3 text-sm"
       />
       <input
-        placeholder="Ягаан мөр (subtitle)"
-        value={form.subtitle}
-        onChange={(e) => onChange({ ...form, subtitle: e.target.value })}
+        placeholder="Headline (EN)"
+        value={form.titleEn}
+        onChange={(e) => onChange({ ...form, titleEn: e.target.value })}
         className="border border-line bg-cream px-3 py-3 text-sm"
       />
       <input

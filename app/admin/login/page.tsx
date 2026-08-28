@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { adminLogin, setAdminToken } from "@/lib/admin";
+import { adminLogin, setAdminSession } from "@/lib/admin";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -14,7 +14,7 @@ export default function AdminLoginPage() {
     e.preventDefault();
     try {
       const data = await adminLogin(username, password);
-      setAdminToken(data.token);
+      setAdminSession(data.token, data.user);
       router.push("/admin");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Алдаа");

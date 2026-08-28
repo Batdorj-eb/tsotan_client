@@ -1,14 +1,25 @@
+"use client";
+
 import Link from "next/link";
+import { useAdminUser } from "@/components/admin-user";
 
 export default function AdminHomePage() {
+  const { isAdmin } = useAdminUser();
   const cards = [
-    { href: "/admin/products", label: "Бараа", text: "Нэмэх, засах, устгах" },
+    {
+      href: "/admin/products",
+      label: "Бараа",
+      text: isAdmin ? "Нэмэх, засах, устгах" : "Нэмэх, засах",
+    },
     { href: "/admin/categories", label: "Категори", text: "Ангилал, дэд ангилал бүртгэх" },
     { href: "/admin/banners", label: "Нүүр хуудас", text: "Hero слайд, баннер, видео" },
     { href: "/admin/orders", label: "Захиалга", text: "Төлбөр, хүргэлт" },
-    { href: "/admin/services", label: "Үйлчилгээ", text: "Гарчиг, зураг, дараалал" },
+    { href: "/admin/services", label: "Үйлчилгээ", text: "Үйлчилгээ, дэд үйлчилгээ" },
     { href: "/admin/contact", label: "Холбоо барих", text: "Хаяг, утас, газрын зураг" },
     { href: "/admin/messages", label: "Санал хүсэлт", text: "Contact формын ирүүлэлт" },
+    ...(isAdmin
+      ? [{ href: "/admin/users", label: "Хэрэглэгч", text: "Админ, editor бүртгэх" }]
+      : []),
   ];
 
   return (

@@ -17,30 +17,30 @@ export const site = {
 };
 
 export const nav = [
-  { href: "/", label: "Нүүр хуудас" },
-  { href: "/shop-new", label: "Шинэ бараа" },
-  { href: "/shop", label: "Бүтээгдэхүүн", mega: true },
-  { href: "/service", label: "Үйлчилгээ" },
-  { href: "/#social", label: "Сошиал" },
-  { href: "/contact", label: "Холбоо барих" },
+  { href: "/", key: "nav.home" as const },
+  { href: "/shop-new", key: "nav.new" as const },
+  { href: "/shop", key: "nav.shop" as const, mega: true },
+  { href: "/service", key: "nav.service" as const },
+  { href: "/#social", key: "nav.social" as const },
+  { href: "/contact", key: "nav.contact" as const },
 ];
 
 export const fallbackCategories = [
-  { id: 1000, name: "Даавуу" },
-  { id: 1100, name: "Футболк" },
-  { id: 1200, name: "Бүс" },
-  { id: 1700, name: "Уут" },
-  { id: 1300, name: "Ширээний бүтээлэг" },
-  { id: 1400, name: "Ширээний гол" },
-  { id: 1500, name: "Амны алчуур" },
-  { id: 1600, name: "Цүнх, Богц" },
-  { id: 1800, name: "Аравч" },
-  { id: 1900, name: "Буйдангын суудал" },
-  { id: 2000, name: "Дэрний уут" },
-  { id: 2100, name: "Холст хэвлэл" },
-  { id: 2200, name: "Хормогч" },
-  { id: 2300, name: "Бэлэн хувцас" },
-  { id: 2400, name: "Бусад" },
+  { id: 1000, name: "Даавуу", nameEn: "Fabric" },
+  { id: 1100, name: "Футболк", nameEn: "T-shirts" },
+  { id: 1200, name: "Бүс", nameEn: "Belts" },
+  { id: 1700, name: "Уут", nameEn: "Bags" },
+  { id: 1300, name: "Ширээний бүтээлэг", nameEn: "Tablecloths" },
+  { id: 1400, name: "Ширээний гол", nameEn: "Table runners" },
+  { id: 1500, name: "Амны алчуур", nameEn: "Napkins" },
+  { id: 1600, name: "Цүнх, Богц", nameEn: "Bags & pouches" },
+  { id: 1800, name: "Аравч", nameEn: "Cushions" },
+  { id: 1900, name: "Буйдангын суудал", nameEn: "Sofa covers" },
+  { id: 2000, name: "Дэрний уут", nameEn: "Pillowcases" },
+  { id: 2100, name: "Холст хэвлэл", nameEn: "Canvas prints" },
+  { id: 2200, name: "Хормогч", nameEn: "Aprons" },
+  { id: 2300, name: "Бэлэн хувцас", nameEn: "Ready-to-wear" },
+  { id: 2400, name: "Бусад", nameEn: "Other" },
 ];
 
 export const services = [

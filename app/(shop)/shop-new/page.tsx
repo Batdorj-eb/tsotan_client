@@ -10,7 +10,6 @@ export default async function ShopNewPage() {
     <ShopCatalog
       products={products}
       categories={[]}
-      title="Шинэ бараа"
       onlyNew
     />
   );

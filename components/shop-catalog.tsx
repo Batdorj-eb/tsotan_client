@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useLanguage } from "@/components/language-provider";
 import { ProductCard } from "@/components/product-card";
 import { childCategories, rootCategories } from "@/lib/categories";
 import { slugify } from "@/lib/format";
@@ -10,7 +11,7 @@ import type { Category, Product } from "@/lib/types";
 type Props = {
   products: Product[];
   categories: Category[];
-  title: string;
+  title?: string;
   parent?: string;
   child?: string;
   category?: string;
@@ -28,6 +29,7 @@ export function ShopCatalog({
   category,
   onlyNew,
 }: Props) {
+  const { t, text } = useLanguage();
   const [sort, setSort] = useState("default");
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState("");
@@ -46,7 +48,10 @@ export function ShopCatalog({
     }
     if (query.trim()) {
       const q = query.toLowerCase();
-      list = list.filter((p) => p.name.toLowerCase().includes(q));
+      list = list.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) || (p.nameEn || "").toLowerCase().includes(q),
+      );
     }
     if (sort === "low2high") list = [...list].sort((a, b) => a.price - b.price);
     else if (sort === "high2low") list = [...list].sort((a, b) => b.price - a.price);
@@ -59,6 +64,18 @@ export function ShopCatalog({
   const visible = filtered.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
   const from = filtered.length === 0 ? 0 : (current - 1) * PAGE_SIZE + 1;
   const to = Math.min(current * PAGE_SIZE, filtered.length);
+  const headingCat = child
+    ? categories.find((c) => c.name === child)
+    : parent
+      ? categories.find((c) => c.name === parent)
+      : undefined;
+  const heading = headingCat
+    ? text(headingCat.name, headingCat.nameEn)
+    : title
+      ? text(title)
+      : onlyNew
+        ? t("nav.new")
+        : t("nav.shop");
 
   return (
     <div
@@ -68,18 +85,18 @@ export function ShopCatalog({
     >
       {!onlyNew ? (
         <aside className="lg:sticky lg:top-28 lg:self-start">
-          <h2 className="text-[11px] uppercase tracking-[0.22em] text-muted">Хайлт</h2>
+          <h2 className="text-[11px] uppercase tracking-[0.22em] text-muted">{t("shop.search")}</h2>
           <input
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
               setPage(1);
             }}
-            placeholder="Бараа хайх..."
+            placeholder={t("shop.searchPlaceholder")}
             className="mt-3 w-full border-0 border-b border-line bg-transparent px-0 py-2.5 text-sm outline-none focus:border-brand"
           />
           <h2 className="mt-12 text-[11px] uppercase tracking-[0.22em] text-muted">
-            Ангилал
+            {t("shop.categories")}
           </h2>
           <ul className="mt-5 space-y-2.5">
             <li>
@@ -87,7 +104,7 @@ export function ShopCatalog({
                 href="/shop"
                 className={`text-sm ${!parent ? "text-brand" : "text-ink/70 hover:text-brand"}`}
               >
-                Бүгд
+                {t("shop.all")}
               </Link>
             </li>
             {rootCategories(categories).map((cat) => {
@@ -101,7 +118,7 @@ export function ShopCatalog({
                       parentActive && !child ? "text-brand" : "text-ink/70 hover:text-brand"
                     }`}
                   >
-                    {cat.name}
+                    {text(cat.name, cat.nameEn)}
                   </Link>
                   {children.length ? (
                     <ul className="mt-1.5 space-y-1.5 border-l border-line pl-3">
@@ -115,7 +132,7 @@ export function ShopCatalog({
                                 : "text-ink/60 hover:text-brand"
                             }`}
                           >
-                            {kid.name}
+                            {text(kid.name, kid.nameEn)}
                           </Link>
                         </li>
                       ))}
@@ -131,10 +148,10 @@ export function ShopCatalog({
       <div>
         <div className="flex flex-col gap-4 border-b border-line pb-8 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.22em] text-gold">Дэлгүүр</p>
-            <h1 className="mt-2 font-display text-4xl text-ink sm:text-5xl">{title}</h1>
+            <p className="text-[11px] uppercase tracking-[0.22em] text-gold">{t("shop.eyebrow")}</p>
+            <h1 className="mt-2 font-display text-4xl text-ink sm:text-5xl">{heading}</h1>
             <p className="mt-3 text-sm text-muted">
-              {from}–{to} / {filtered.length} бараа
+              {t("shop.count", { from, to, count: filtered.length })}
             </p>
           </div>
           <select
@@ -142,14 +159,14 @@ export function ShopCatalog({
             onChange={(e) => setSort(e.target.value)}
             className="border-0 border-b border-line bg-transparent px-0 py-2 text-sm outline-none"
           >
-            <option value="default">Онцгой эхэнд</option>
-            <option value="low2high">Үнэ — Багаас их рүү</option>
-            <option value="high2low">Үнэ — Ихээс бага руу</option>
+            <option value="default">{t("shop.sortFeatured")}</option>
+            <option value="low2high">{t("shop.sortLow")}</option>
+            <option value="high2low">{t("shop.sortHigh")}</option>
           </select>
         </div>
 
         {visible.length === 0 ? (
-          <p className="py-24 text-center text-muted">Бараа олдсонгүй.</p>
+          <p className="py-24 text-center text-muted">{t("shop.empty")}</p>
         ) : (
           <div className="mt-12 grid gap-x-8 gap-y-14 sm:grid-cols-2 xl:grid-cols-3">
             {visible.map((product) => (

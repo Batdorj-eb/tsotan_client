@@ -4,14 +4,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useCart } from "@/components/cart-provider";
+import { useLanguage } from "@/components/language-provider";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { rootCategories } from "@/lib/categories";
-import { formatMnt } from "@/lib/format";
+import { Price } from "@/components/price";
+import { lineUsd } from "@/lib/format";
 import { nav, site } from "@/lib/site";
 import type { Category } from "@/lib/types";
 
 export function Header({ categories }: { categories: Category[] }) {
   const pathname = usePathname();
   const { count, items, total, open, setOpen, remove } = useCart();
+  const { t, text } = useLanguage();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -62,7 +66,7 @@ export function Header({ categories }: { categories: Category[] }) {
           : "bg-transparent text-cream"
       }`}
     >
-      <div className="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-6 px-5 py-2 lg:px-8 lg:py-0">
+      <div className="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-4 px-5 py-2 sm:gap-6 lg:px-8 lg:py-0">
         <Link href="/" className="flex items-center shrink-0 lg:h-14">
           {solid ? (
             <img src="/logo.jpg" alt="Tsotan" className="block h-11 w-auto object-contain sm:h-12 lg:h-14" />
@@ -94,12 +98,12 @@ export function Header({ categories }: { categories: Category[] }) {
                         : "text-cream/85 hover:text-cream"
                   }`}
                 >
-                  {item.label}
+                  {t(item.key)}
                 </Link>
                 {megaOpen && categories.length > 0 ? (
                   <div className="absolute left-1/2 top-full w-[560px] -translate-x-1/2 border border-line bg-cream p-8 text-ink shadow-[0_24px_80px_rgba(28,22,20,0.12)]">
                     <p className="mb-5 text-[11px] uppercase tracking-[0.22em] text-muted">
-                      Ангилал
+                      {t("header.categories")}
                     </p>
                     <div className="grid grid-cols-2 gap-x-10 gap-y-2">
                       {parents.map((cat) => (
@@ -108,7 +112,7 @@ export function Header({ categories }: { categories: Category[] }) {
                           href={`/shop?parent=${encodeURIComponent(cat.name)}`}
                           className="py-1.5 text-sm transition hover:text-brand"
                         >
-                          {cat.name}
+                          {text(cat.name, cat.nameEn)}
                         </Link>
                       ))}
                     </div>
@@ -129,13 +133,13 @@ export function Header({ categories }: { categories: Category[] }) {
                       : "text-cream/85 hover:text-cream"
                 }`}
               >
-                {item.label}
+                {t(item.key)}
               </Link>
             ),
           )}
         </nav>
 
-        <div className="flex items-center justify-end gap-4 lg:h-14">
+        <div className="flex items-center justify-end gap-3 sm:gap-4 lg:h-14">
           <a
             href={site.phoneHref}
             className={`hidden text-[11px] uppercase tracking-[0.16em] xl:block ${
@@ -149,9 +153,9 @@ export function Header({ categories }: { categories: Category[] }) {
             className={`relative text-[12px] uppercase tracking-[0.16em] ${
               solid ? "text-ink" : "text-cream"
             }`}
-            aria-label="Сагс"
+            aria-label={t("header.cart")}
           >
-            Сагс
+            {t("header.cart")}
             <span
               className={`ml-2 inline-flex h-5 min-w-5 items-center justify-center px-1 text-[10px] ${
                 solid ? "bg-brand text-cream" : "bg-cream text-brand-dark"
@@ -166,7 +170,7 @@ export function Header({ categories }: { categories: Category[] }) {
               setOpen(false);
               setMobileOpen((v) => !v);
             }}
-            aria-label={mobileOpen ? "Цэс хаах" : "Цэс"}
+            aria-label={mobileOpen ? t("header.closeMenu") : t("header.menu")}
             aria-expanded={mobileOpen}
           >
             <span
@@ -180,19 +184,20 @@ export function Header({ categories }: { categories: Category[] }) {
               } ${mobileOpen ? "-translate-y-[3.5px] -rotate-45" : ""}`}
             />
           </button>
+          <LanguageSwitcher light={!solid} />
         </div>
       </div>
 
       {open ? (
         <div className="absolute right-0 top-full w-full max-w-md border border-line bg-cream p-6 text-ink shadow-[0_24px_80px_rgba(28,22,20,0.14)] sm:right-8">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="font-display text-2xl">Сагс</h3>
+            <h3 className="font-display text-2xl">{t("header.cart")}</h3>
             <button onClick={() => setOpen(false)} className="text-sm text-muted">
-              Хаах
+              {t("header.close")}
             </button>
           </div>
           {items.length === 0 ? (
-            <p className="py-8 text-center text-sm text-muted">Сагсанд бараа байхгүй байна</p>
+            <p className="py-8 text-center text-sm text-muted">{t("header.cartEmpty")}</p>
           ) : (
             <>
               <ul className="max-h-72 space-y-4 overflow-auto">
@@ -205,9 +210,15 @@ export function Header({ categories }: { categories: Category[] }) {
                       <div className="h-16 w-16 bg-line" />
                     )}
                     <div className="flex-1">
-                      <p className="text-sm">{item.name}</p>
+                      <p className="text-sm">{text(item.name, item.nameEn)}</p>
                       <p className="mt-1 text-xs text-muted">
-                        {item.quantity} × {formatMnt(item.price)}
+                        {item.quantity} ×{" "}
+                        <Price
+                          mnt={item.price}
+                          usd={item.usdPrice}
+                          className="text-xs"
+                          usdClassName="text-muted"
+                        />
                       </p>
                     </div>
                     <button
@@ -220,8 +231,16 @@ export function Header({ categories }: { categories: Category[] }) {
                 ))}
               </ul>
               <p className="mt-5 flex justify-between border-t border-line pt-4 text-sm">
-                <span>Нийт</span>
-                <span>{formatMnt(total)}</span>
+                <span>{t("header.total")}</span>
+                <span>
+                  <Price
+                    mnt={total}
+                    usd={items.reduce(
+                      (sum, item) => sum + lineUsd(item.price, item.quantity, item.usdPrice),
+                      0,
+                    )}
+                  />
+                </span>
               </p>
               <div className="mt-4 grid grid-cols-2 gap-3">
                 <Link
@@ -229,14 +248,14 @@ export function Header({ categories }: { categories: Category[] }) {
                   onClick={() => setOpen(false)}
                   className="border border-ink py-2.5 text-center text-xs uppercase tracking-[0.16em]"
                 >
-                  Сагсыг харах
+                  {t("header.viewCart")}
                 </Link>
                 <Link
                   href="/checkout"
                   onClick={() => setOpen(false)}
                   className="bg-brand py-2.5 text-center text-xs uppercase tracking-[0.16em] text-cream"
                 >
-                  Төлбөр
+                  {t("header.checkout")}
                 </Link>
               </div>
             </>
@@ -252,13 +271,16 @@ export function Header({ categories }: { categories: Category[] }) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo.jpg" alt="Tsotan" className="h-11 w-auto object-contain" />
           </Link>
-          <button
-            onClick={() => setMobileOpen(false)}
-            className="text-xs uppercase tracking-[0.16em] text-muted"
-            aria-label="Цэс хаах"
-          >
-            Хаах
-          </button>
+          <div className="flex items-center gap-5">
+            <LanguageSwitcher />
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="text-xs uppercase tracking-[0.16em] text-muted"
+              aria-label={t("header.closeMenu")}
+            >
+              {t("header.close")}
+            </button>
+          </div>
         </div>
         <nav className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-10 pt-4">
           <div className="flex flex-col gap-5">
@@ -269,11 +291,13 @@ export function Header({ categories }: { categories: Category[] }) {
                 onClick={() => setMobileOpen(false)}
                 className="text-sm uppercase tracking-[0.16em] text-ink"
               >
-                {item.label}
+                {t(item.key)}
               </Link>
             ))}
             <div className="border-t border-line pt-5">
-              <p className="mb-3 text-[11px] uppercase tracking-[0.2em] text-muted">Ангилал</p>
+              <p className="mb-3 text-[11px] uppercase tracking-[0.2em] text-muted">
+                {t("header.categories")}
+              </p>
               {parents.map((cat) => (
                 <Link
                   key={cat.id}
@@ -281,7 +305,7 @@ export function Header({ categories }: { categories: Category[] }) {
                   onClick={() => setMobileOpen(false)}
                   className="block py-1.5 text-sm text-muted"
                 >
-                  {cat.name}
+                  {text(cat.name, cat.nameEn)}
                 </Link>
               ))}
             </div>

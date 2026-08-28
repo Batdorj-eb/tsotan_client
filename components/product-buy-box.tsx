@@ -2,16 +2,24 @@
 
 import { useState } from "react";
 import { useCart } from "@/components/cart-provider";
-import { formatMnt, productImage } from "@/lib/format";
+import { useLanguage } from "@/components/language-provider";
+import { Price } from "@/components/price";
+import { productImage } from "@/lib/format";
 import type { Product } from "@/lib/types";
 
 export function ProductBuyBox({ product }: { product: Product }) {
   const { add } = useCart();
+  const { t, text } = useLanguage();
   const [qty, setQty] = useState(1);
   const images = product.image?.length ? product.image : product.img ? [product.img] : [];
   const [active, setActive] = useState(0);
   const maxQty = product.stock == null ? undefined : product.stock;
   const outOfStock = maxQty === 0;
+  const title = text(product.name, product.nameEn);
+  const description = text(product.description, product.descriptionEn);
+  const size = text(product.size, product.sizeEn);
+  const material = text(product.material, product.materialEn);
+  const instruction = text(product.instruction, product.instructionEn);
 
   return (
     <div className="mx-auto grid max-w-7xl gap-12 px-5 py-16 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-20">
@@ -21,11 +29,11 @@ export function ProductBuyBox({ product }: { product: Product }) {
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={images[active]}
-              alt={product.name}
+              alt={title}
               className="h-full w-full object-cover"
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-muted">Зураггүй</div>
+            <div className="flex h-full items-center justify-center text-muted">{t("product.noImage")}</div>
           )}
         </div>
         {images.length > 1 ? (
@@ -46,19 +54,21 @@ export function ProductBuyBox({ product }: { product: Product }) {
 
       <div className="lg:pt-4">
         <p className="text-[11px] uppercase tracking-[0.22em] text-gold">
-          {product.parentCategory}
+          {text(product.parentCategory, product.parentCategoryEn)}
         </p>
         <h1 className="mt-3 font-display text-4xl leading-tight text-ink sm:text-5xl">
-          {product.name}
+          {title}
         </h1>
-        <div className="mt-5 flex items-baseline gap-4">
-          <span className="text-xl">{formatMnt(product.price)}</span>
-          {product.usdPrice ? (
-            <span className="text-sm text-muted">${product.usdPrice}</span>
-          ) : null}
+        <div className="mt-5">
+          <Price
+            mnt={product.price}
+            usd={product.usdPrice}
+            className="text-xl"
+            usdClassName="text-sm text-muted"
+          />
         </div>
-        {product.description ? (
-          <p className="mt-6 max-w-md text-sm leading-7 text-muted">{product.description}</p>
+        {description ? (
+          <p className="mt-6 max-w-md text-sm leading-7 text-muted">{description}</p>
         ) : null}
 
         <div className="mt-8 flex items-center gap-3">
@@ -89,6 +99,7 @@ export function ProductBuyBox({ product }: { product: Product }) {
                 {
                   id: product.id,
                   name: product.name,
+                  nameEn: product.nameEn,
                   price: product.price,
                   usdPrice: product.usdPrice,
                   img: productImage(product),
@@ -99,30 +110,30 @@ export function ProductBuyBox({ product }: { product: Product }) {
             }
             className="bg-brand px-8 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-cream hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {outOfStock ? "Дууссан" : "Сагсанд нэмэх"}
+            {outOfStock ? t("product.soldOut") : t("product.addToCart")}
           </button>
         </div>
         {maxQty != null && !outOfStock ? (
-          <p className="mt-3 text-xs text-muted">Үлдсэн нөөц: {maxQty}</p>
+          <p className="mt-3 text-xs text-muted">{t("product.stockLeft", { n: maxQty })}</p>
         ) : null}
 
         <dl className="mt-10 space-y-3 border-t border-line pt-8 text-sm">
-          {product.size ? (
+          {size ? (
             <div className="flex gap-4">
-              <dt className="w-32 text-muted">Хэмжээ</dt>
-              <dd>{product.size}</dd>
+              <dt className="w-32 text-muted">{t("product.size")}</dt>
+              <dd>{size}</dd>
             </div>
           ) : null}
-          {product.material ? (
+          {material ? (
             <div className="flex gap-4">
-              <dt className="w-32 text-muted">Материал</dt>
-              <dd>{product.material}</dd>
+              <dt className="w-32 text-muted">{t("product.material")}</dt>
+              <dd>{material}</dd>
             </div>
           ) : null}
-          {product.instruction ? (
+          {instruction ? (
             <div className="flex gap-4">
-              <dt className="w-32 text-muted">Угаах заавар</dt>
-              <dd>{product.instruction}</dd>
+              <dt className="w-32 text-muted">{t("product.care")}</dt>
+              <dd>{instruction}</dd>
             </div>
           ) : null}
         </dl>
