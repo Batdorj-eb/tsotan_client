@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useCart } from "@/components/cart-provider";
+import { rootCategories } from "@/lib/categories";
 import { formatMnt } from "@/lib/format";
 import { nav, site } from "@/lib/site";
 import type { Category } from "@/lib/types";
@@ -50,6 +51,7 @@ export function Header({ categories }: { categories: Category[] }) {
   }, [mobileOpen]);
 
   const solid = scrolled || !isHome || mobileOpen || open;
+  const parents = rootCategories(categories);
 
   return (
     <>
@@ -100,7 +102,7 @@ export function Header({ categories }: { categories: Category[] }) {
                       Ангилал
                     </p>
                     <div className="grid grid-cols-2 gap-x-10 gap-y-2">
-                      {categories.map((cat) => (
+                      {parents.map((cat) => (
                         <Link
                           key={cat.id}
                           href={`/shop?parent=${encodeURIComponent(cat.name)}`}
@@ -272,7 +274,7 @@ export function Header({ categories }: { categories: Category[] }) {
             ))}
             <div className="border-t border-line pt-5">
               <p className="mb-3 text-[11px] uppercase tracking-[0.2em] text-muted">Ангилал</p>
-              {categories.map((cat) => (
+              {parents.map((cat) => (
                 <Link
                   key={cat.id}
                   href={`/shop?parent=${encodeURIComponent(cat.name)}`}

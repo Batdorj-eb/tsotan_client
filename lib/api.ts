@@ -30,7 +30,7 @@ export function getProduct(id: string) {
 }
 
 export function getCategories() {
-  return getJson<Category[]>("/category/list/0", []);
+  return getJson<Category[]>("/category/list", []);
 }
 
 export function getCategoriesByParent(id: number | string) {

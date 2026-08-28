@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function AdminHomePage() {
   const cards = [
     { href: "/admin/products", label: "Бараа", text: "Нэмэх, засах, устгах" },
-    { href: "/admin/categories", label: "Категори", text: "Ангилал удирдах" },
+    { href: "/admin/categories", label: "Категори", text: "Ангилал, дэд ангилал бүртгэх" },
     { href: "/admin/banners", label: "Нүүр хуудас", text: "Hero слайд, баннер, видео" },
     { href: "/admin/orders", label: "Захиалга", text: "Төлбөр, хүргэлт" },
     { href: "/admin/services", label: "Үйлчилгээ", text: "Гарчиг, зураг, дараалал" },

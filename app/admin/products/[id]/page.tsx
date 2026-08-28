@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { adminFetch, getAdminToken } from "@/lib/admin";
 import { API_URL } from "@/lib/api";
+import { childCategories, rootCategories } from "@/lib/categories";
 import { toast } from "@/lib/toast";
 import type { Category, Product } from "@/lib/types";
 
@@ -222,11 +223,26 @@ export default function ProductFormPage() {
         className="w-full border border-line bg-cream px-3 py-3 text-sm"
       >
         <option value="">Категори</option>
-        {categories.map((c) => (
-          <option key={c.id} value={c.id}>
-            {c.name}
-          </option>
-        ))}
+        {rootCategories(categories).map((root) => {
+          const children = childCategories(categories, root.id);
+          if (!children.length) {
+            return (
+              <option key={root.id} value={root.id}>
+                {root.name}
+              </option>
+            );
+          }
+          return (
+            <optgroup key={root.id} label={root.name}>
+              <option value={root.id}>{root.name}</option>
+              {children.map((child) => (
+                <option key={child.id} value={child.id}>
+                  {child.name}
+                </option>
+              ))}
+            </optgroup>
+          );
+        })}
       </select>
 
       <div>

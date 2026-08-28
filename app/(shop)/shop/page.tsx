@@ -20,7 +20,7 @@ export default async function ShopPage({
     <ShopCatalog
       products={products}
       categories={categories}
-      title={parent || "Бүтээгдэхүүн"}
+      title={child || parent || "Бүтээгдэхүүн"}
       parent={parent}
       child={child}
       category={category}

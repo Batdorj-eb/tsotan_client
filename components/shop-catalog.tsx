@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { ProductCard } from "@/components/product-card";
+import { childCategories, rootCategories } from "@/lib/categories";
 import { slugify } from "@/lib/format";
 import type { Category, Product } from "@/lib/types";
 
@@ -89,18 +90,40 @@ export function ShopCatalog({
                 Бүгд
               </Link>
             </li>
-            {categories.map((cat) => (
-              <li key={cat.id}>
-                <Link
-                  href={`/shop?parent=${encodeURIComponent(cat.name)}`}
-                  className={`text-sm ${
-                    parent === cat.name ? "text-brand" : "text-ink/70 hover:text-brand"
-                  }`}
-                >
-                  {cat.name}
-                </Link>
-              </li>
-            ))}
+            {rootCategories(categories).map((cat) => {
+              const children = childCategories(categories, cat.id);
+              const parentActive = parent === cat.name;
+              return (
+                <li key={cat.id}>
+                  <Link
+                    href={`/shop?parent=${encodeURIComponent(cat.name)}`}
+                    className={`text-sm ${
+                      parentActive && !child ? "text-brand" : "text-ink/70 hover:text-brand"
+                    }`}
+                  >
+                    {cat.name}
+                  </Link>
+                  {children.length ? (
+                    <ul className="mt-1.5 space-y-1.5 border-l border-line pl-3">
+                      {children.map((kid) => (
+                        <li key={kid.id}>
+                          <Link
+                            href={`/shop?parent=${encodeURIComponent(cat.name)}&child=${encodeURIComponent(kid.name)}`}
+                            className={`text-sm ${
+                              parentActive && child === kid.name
+                                ? "text-brand"
+                                : "text-ink/60 hover:text-brand"
+                            }`}
+                          >
+                            {kid.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </li>
+              );
+            })}
           </ul>
         </aside>
       ) : null}

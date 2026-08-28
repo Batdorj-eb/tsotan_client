@@ -49,7 +49,9 @@ export default function AdminProductsPage() {
                 <td className="py-3">{p.name}</td>
                 <td>{formatMnt(p.price)}</td>
                 <td>{p.stock == null ? "—" : p.stock}</td>
-                <td>{p.parentCategory}</td>
+                <td>
+                  {[p.parentCategory, p.childCategory].filter(Boolean).join(" — ")}
+                </td>
                 <td className="text-right">
                   <Link href={`/admin/products/${p.id}`} className="mr-3 text-brand">Засах</Link>
                   <button onClick={() => remove(p.id)} className="text-accent">Устгах</button>
